@@ -1,42 +1,52 @@
-var sea,ship;
-var seaImg,shipImg;
+var path,boy, leftBoundary,rightBoundary;
+var pathImg,boyImg;
+var i;
 
 function preload(){
-  //uncomment the code to add animation to ship 
-
-  shipImg1 = loadAnimation("ship-1.png");
-  shipImg1 = loadAnimation("ship-1.png","ship-2.png","ship-1.png","ship-2.png");
-
-  seaImg = loadImage("sea.png");
+  pathImg = loadImage("path.png");
+  boyImg = loadAnimation("Runner-1.png","Runner-2.png");
 }
 
 function setup(){
+  
   createCanvas(400,400);
-  background("blue");
-
-  // Moving background
-  sea=createSprite(400,200);
-  sea.addImage(seaImg);
-  sea.velocityX = -5;
-  sea.scale=0.3;
-
   
-  ship = createSprite(130,200,30,30);
-  ship.addAnimation("movingShip",shipImg1);
-  ship.scale =0.25;
+// Moving background
+path=createSprite(200,200);
+path.addImage(pathImg);
+path.velocityY = 4;
+path.scale=1.2;
+
+//creating boy running
+boy = createSprite(180,340,30,30);
+boy.scale=0.08;
+boy.addAnimation("JakeRunning",boyImg);
   
+
+leftBoundary=createSprite(0,0,100,800);
+leftBoundary.visible = false;
+
+
+rightBoundary=createSprite(410,0,100,800);
+rightBoundary.visible = false;
 }
 
 function draw() {
   background(0);
-  sea.velocityX = -3;
-
-  //uncomment code to reset the background
-  if(sea.x < 0){
-    sea.x = sea.width/8;
+  path.velocityY = 4;
   
-  }
+  boy.x = World.mouseX;
+  
+  edges= createEdgeSprites();
+  boy.collide(edges[3]);
+  boy.collide(leftBoundary);
+  boy.collide(rightBoundary);
+  
+  //code to reset the background
 
- 
+  if(path.y > 400 ){
+    path.y = height/2;
+  }
+  
   drawSprites();
 }

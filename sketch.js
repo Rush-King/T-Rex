@@ -1,151 +1,111 @@
-var path,boy,cash,diamonds,jwellery,sword;
-var pathImg,boyImg,cashImg,diamondsImg,jwelleryImg,swordImg;
-var treasureCollection = 0;
-var cashG,diamondsG,jwelleryG,swordGroup;
+const Engine = Matter.Engine;
+const World= Matter.World;
+const Bodies = Matter.Bodies;
 
-//Game States
-var PLAY=1;
-var END=0;
-var gameState=1;
+var engine, world;
 
-function preload(){
-  pathImg = loadImage("Road.png");
-  boyImg = loadAnimation("Runner-1.png","Runner-2.png");
-  cashImg = loadImage("cash.png");
-  diamondsImg = loadImage("diamonds.png");
-  jwelleryImg = loadImage("jwell.png");
-  swordImg = loadImage("sword.png");
-  endImg =loadAnimation("gameOver.png");
-}
+var particle1, particle2,particle3,particle4,particle5;
+var particle6, particle7,particle8,particle9,particle10;
+var rotator1, rotator2, rotator3;
+var block1, block2;
+
+var angle1=60;
+var angle2=60;
+var angle3=60;
 
 function setup(){
-  
-//create a canvas
+    var canvas = createCanvas(550,600);
+    engine = Engine.create();
+    world = engine.world;
 
-createCanvas(windowWidth,windowHeight);
-
-// Moving background
-
-path=createSprite(width/2,200);
-path.addImage(pathImg);
-path.velocityY = 4;
-
-
-//creating boy running
-boy = createSprite(width/2,height-20,20,20);
-boy.addAnimation("SahilRunning",boyImg);
-boy.scale=0.08;
-  
-  
-cashG=new Group();
-diamondsG=new Group();
-jwelleryG=new Group();
-swordGroup=new Group();
-
-}
-
-function draw() {
-
-  if(gameState===PLAY){
-  background(0);
-  boy.x = World.mouseX;
-  
-  edges= createEdgeSprites();
-  boy.collide(edges);
-  
-  //code to reset the background
-
-  if(path.y > height ){
-  path.y = height/2;
-  }
-  
-    createCash();
-    createDiamonds();
-    createJwellery();
-    createSword();
-
-    if (cashG.isTouching(boy)) {
-      cashG.destroyEach();
-      treasureCollection=treasureCollection + 50;
+    //created plane and block bodies
+    var plane_options={
+      isStatic: true
     }
-    else if (diamondsG.isTouching(boy)) {
-      diamondsG.destroyEach();
-      treasureCollection=treasureCollection + 100;
-      
-    }else if(jwelleryG.isTouching(boy)) {
-      jwelleryG.destroyEach();
-      treasureCollection= treasureCollection + 150;
-      
-    }else{
-      if(swordGroup.isTouching(boy)) {
-        gameState=END;
-        
-        boy.addAnimation("SahilRunning",endImg);
-        boy.x=width/2;
-        boy.y=height/2;
-        boy.scale=0.6;
-        
-        cashG.destroyEach();
-        diamondsG.destroyEach();
-        jwelleryG.destroyEach();
-        swordGroup.destroyEach();
-        
-        cashG.setVelocityYEach(0);
-        diamondsG.setVelocityYEach(0);
-        jwelleryG.setVelocityYEach(0);
-        swordGroup.setVelocityYEach(0);
-     
+
+    plane = Bodies.rectangle(600,height,1200,20,plane_options);
+    World.add(world,plane);
+    block1=Bodies.rectangle(100,400,150,20,plane_options);
+    World.add(world,block1);
+    block2=Bodies.rectangle(400,400,150,20,plane_options);
+    World.add(world,block2);
+
+    //created multiple of particle bodies 
+    var particle_options = {
+      restitution:0.4,
+      friction:0.02
     }
-  }
-  
-  drawSprites();
-  textSize(20);
-  fill(255);
-  text("Treasure: "+ treasureCollection,width-150,30);
-  }
+
+    particle1 = Bodies.circle(220,10,10,particle_options);
+    World.add(world,particle1);
+    particle2 = Bodies.circle(220,10,10,particle_options);
+    World.add(world,particle2);
+    particle3 = Bodies.circle(225,10,10,particle_options);
+    World.add(world,particle3);
+    particle4 = Bodies.circle(230,10,10,particle_options);
+    World.add(world,particle4);
+    particle5 =Bodies.circle(230,10,10,particle_options);
+    World.add(world,particle5);
+
+    var rotator_options={
+      isStatic: true
+    };
+
+    rotator1 = Bodies.rectangle(250,200,150,20,rotator_options);
+    World.add(world,rotator1);
+
+    rotator2 = Bodies.rectangle(250,200,150,20,rotator_options);
+    World.add(world,rotator2);
+
+    rotator3 = Bodies.rectangle(250,200,150,20,rotator_options);
+    World.add(world,rotator3);
+
+    //styling the bodies here
+    fill("brown");
+    rectMode(CENTER);
+    ellipseMode(RADIUS);
 
 }
 
-function createCash() {
-  if (World.frameCount % 200 == 0) {
-  var cash = createSprite(Math.round(random(50, width-50),40, 10, 10));
-  cash.addImage(cashImg);
-  cash.scale=0.12;
-  cash.velocityY = 5;
-  cash.lifetime = 200;
-  cashG.add(cash);
-  }
-}
+function draw(){
+    background("lightgreen");
+    Engine.update(engine);
 
-function createDiamonds() {
-  if (World.frameCount % 320 == 0) {
-  var diamonds = createSprite(Math.round(random(50, width-50),40, 10, 10));
-  diamonds.addImage(diamondsImg);
-  diamonds.scale=0.03;
-  diamonds.velocityY = 5;
-  diamonds.lifetime = 200;
-  diamondsG.add(diamonds);
-}
-}
+  //created shape for plane and stand
+  rect(plane.position.x,plane.position.y,1200,20);
+  rect(block1.position.x,block1.position.y,150,20);
+  rect(block2.position.x,block2.position.y,150,20);
 
-function createJwellery() {
-  if (World.frameCount % 410 == 0) {
-  var jwellery = createSprite(Math.round(random(50, width-50),40, 10, 10));
-  jwellery.addImage(jwelleryImg);
-  jwellery.scale=0.13;
-  jwellery.velocityY = 5;
-  jwellery.lifetime = 200;
-  jwelleryG.add(jwellery);
-  }
-}
+  //created shape for all the paticles
+  ellipse(particle1.position.x,particle1.position.y,10);
+  ellipse(particle2.position.x,particle2.position.y,10);
+  ellipse(particle3.position.x,particle3.position.y,10);
+  ellipse(particle4.position.x,particle4.position.y,10);
+  ellipse(particle5.position.x,particle5.position.y,10);
 
-function createSword(){
-  if (World.frameCount % 530 == 0) {
-  var sword = createSprite(Math.round(random(50, width-50),40, 10, 10));
-  sword.addImage(swordImg);
-  sword.scale=0.1;
-  sword.velocityY = 4;
-  sword.lifetime = 200;
-  swordGroup.add(sword);
-  }
+  //created shape for all the rotators
+  Matter.Body.rotate(rotator1,angle1)
+  push();
+  translate(rotator1.position.x,rotator1.position.y);
+  rotate(angle1);
+  rect(0,0,150,20);
+  pop();
+  angle1 +=0.2;
+
+  Matter.Body.rotate(rotator2,angle2)
+  push();
+  translate(rotator2.position.x,rotator2.position.y);
+  rotate(angle2);
+  rect(0,0,150,20);
+  pop();
+  angle2 +=0.3;
+
+  Matter.Body.rotate(rotator3,angle3)
+  push();
+  translate(rotator3.position.x,rotator3.position.y);
+  rotate(angle3);
+  rect(0,0,150,20);
+  pop();
+  angle3 +=0.4;
+    
 }

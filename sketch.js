@@ -1,67 +1,52 @@
-
 const Engine = Matter.Engine;
 const World = Matter.World;
 const Bodies = Matter.Bodies;
-const Body = Matter.Body;
+const Constraint = Matter.Constraint;
 
-var ball;
-var groundObj;
-var left;
-var right;
+var engine, world;
+var canvas;
+var palyer, playerBase, playerArcher;
+var baseimage;
 
-function preload()
-{
-	
+function preload() {
+  backgroundImg = loadImage("./assets/background.png");
+  baseimage = loadImage("./assets/base.png");
+  playerimage = loadImage("./assets/player.png");
 }
 
 function setup() {
-	createCanvas(1000,900);
+  canvas = createCanvas(windowWidth, windowHeight);
 
+  engine = Engine.create();
+  world = engine.world;
+  angleMode(DEGREES);
 
-	engine = Engine.create();
-	world = engine.world;
+  var options = {
+    isStatic: true
+  };
 
-	//Create the Bodies Here
+  playerBase = Bodies.rectangle(200, 350, 180, 150, options);
+  World.add(world, playerBase);
 
-var ball_options={
-	isStatic:false,
-	restitution:0.3,
-	friction:0,
-	density:1.2,
+  player = Bodies.rectangle(250, playerBase.position.y - 160, 50, 180, options);
+  World.add(world,player)
+
+ playerArcher = new PlayerArcher( 340, playerBase.position.y - 112, 120, 120);
+
 }
-
-	ball=Bodies.circle(200,100,20,ball_options);
-	World.add(world,ball);
-
-	groundObj=new Ground(400,700,1000,20);
-	left=new Ground(700,630,20,150);
-	right=new Ground(450,630,20,150);
-
-	Engine.run(engine);
-  
-}
-
 
 function draw() {
-  rectMode(CENTER);
-  ellipseMode(RADIUS);
+  background(backgroundImg);
+  image(baseimage,playerBase.position.x,playerBase.position.y,180,150)
+  image(playerimage,player.position.x,player.position.y,50,180)
 
-  background(0);
-  ellipse(ball.position.x,ball.position.y,20);
-  groundObj.display();
-  left.display();
-  right.display();
+  Engine.update(engine);
 
-  drawSprites();
- 
+  playerArcher.display();
+
+  // Title
+  fill("#FFFF");
+  textAlign("center");
+  textSize(40);
+  text("EPIC ARCHERY", width / 2, 100);
 }
-
-function keyPressed(){
-	if (keyCode === UP_ARROW ){
-	Matter.Body.applyForce(ball,ball.position,{x:51,y:-51});
-}
-	
-}
-
-
-
